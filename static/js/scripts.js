@@ -28,7 +28,7 @@ function startRecognition() {
     console.log('You said:', transcript);
     
     displayMessage('You: ' + transcript);
-    sendTextToServer(transcript);
+    sendTextToOllama(transcript);
   };
 
   recognition.onerror = function(event) {
@@ -46,21 +46,26 @@ function startRecognition() {
   recognition.start();
 }
 
-function sendTextToServer(text) {
-  fetch('/process', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ text: text })
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log(data.message);
-    console.log('Server response:', data.text);
-    displayMessage('Server: ' + data.text);
-  });
-}
+function sendTextToOllama(text) {
+    fetch('http://localhost:11434/api/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama3.2-vision:latest',  // Replace with your Ollama model name
+        prompt: text,
+        stream: false
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Ollama response:', data.response);
+      displayMessage('Ollama: ' + data.response);
+    })
+    .catch(error => console.error('Error fetching from Ollama:', error));
+  }
+  
 
 function displayMessage(message) {
   const chatBox = document.getElementById('chat-box');
