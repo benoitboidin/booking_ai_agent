@@ -1,6 +1,6 @@
 function startRecognition() {
   if (!('webkitSpeechRecognition' in window)) {
-    alert('Your browser does not support speech recognition. Please use Google Chrome.');
+    alert('Your browser does not support speech recognition.');
     return;
   }
 
@@ -46,7 +46,21 @@ function startRecognition() {
   recognition.start();
 }
 
+function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'fr-FR';
+    speechSynthesis.speak(utterance);
+    }
+
 function sendTextToOllama(text) {
+    const today = new Date().toLocaleDateString('fr-FR', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const now = new Date();
+    const time = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    
+    const systemPrompt = `Tu es un serveur dans un restaurant. Un client t'appelle. La date d'aujourd'hui est ${today}, il est ${time}. Réponds en français de manière claire et concise, en rappelant uniquement la date de la réservation, l'heure, ainsi que le nombre de personnes (sous forme de liste).`;
+    
     fetch('http://localhost:11434/api/generate', {
       method: 'POST',
       headers: {
@@ -55,6 +69,7 @@ function sendTextToOllama(text) {
       body: JSON.stringify({
         model: 'llama3.2-vision:latest',  // Replace with your Ollama model name
         prompt: text,
+        system: systemPrompt,
         stream: false
       })
     })
@@ -62,6 +77,7 @@ function sendTextToOllama(text) {
     .then(data => {
       console.log('Ollama response:', data.response);
       displayMessage('Ollama: ' + data.response);
+      speak(data.response);   
     })
     .catch(error => console.error('Error fetching from Ollama:', error));
   }
