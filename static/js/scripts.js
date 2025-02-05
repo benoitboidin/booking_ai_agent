@@ -94,7 +94,7 @@ function startRecognition() {
     const transcript = event.results[0][0].transcript;
     console.log('You said:', transcript);
     
-    displayMessage('You: ' + transcript);
+    displayMessage('You: ' + transcript, true);
     sendTextToServer(transcript);
   };
 
@@ -124,18 +124,23 @@ function sendTextToServer(text) {
   .then(response => response.json())
   .then(data => {
     console.log(data.message);
-    console.log('Server response:', data.text);
-    displayMessage('Server: ' + data.text);
+    // console.log('Server response:', data.text);
+    // displayMessage('Server: ' + data.text);
     if (data.aiResponse) {
       displayMessage('AI: ' + data.aiResponse);
     }
   });
 }
 
-function displayMessage(message) {
+function displayMessage(message, isUser = false) {
   const chatBox = document.getElementById('chat-box');
   const messageDiv = document.createElement('div');
-  messageDiv.className = 'chat-message';
+  if (isUser) {
+    messageDiv.className = 'chat-message.user';
+    }
+    else {
+    messageDiv.className = 'chat-message.system';
+    }
   messageDiv.textContent = message;
   if (chatBox) {
     chatBox.appendChild(messageDiv);
