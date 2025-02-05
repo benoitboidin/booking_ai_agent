@@ -77,26 +77,28 @@
     align-self: flex-start;
   }
   
-  /* Booking Input Fields */
-  .booking-details {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+/* Booking Input Fields */
+.booking-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
     gap: 12px;
+    width: 100%;
     margin-bottom: 90px; /* Space for mic button */
   }
   
+  /* Make full-width inputs span both columns */
   .booking-input {
     width: 100%;
     padding: 16px;
     font-size: 18px;
     border-radius: 12px;
-    border: 1px solid #d1d1d6;
+    border: 0px solid #d1d1d6;
     background-color: #f9f9f9;
     transition: all 0.2s ease;
     outline: none;
-    text-align: center;
+    text-align: left;
   }
+  
   
   .booking-input:focus {
     border-color: #007aff;
