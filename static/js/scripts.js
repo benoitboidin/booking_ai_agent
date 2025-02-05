@@ -27,7 +27,7 @@ function startRecognition() {
     const transcript = event.results[0][0].transcript;
     console.log('You said:', transcript);
     
-    displayMessage('You: ' + transcript);
+    displayMessage('YOU: ' + transcript);
     sendTextToOllama(transcript);
   };
 
@@ -48,7 +48,7 @@ function startRecognition() {
 
 function speak(text) {
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'fr-FR';
+    utterance.lang = 'fr';
     speechSynthesis.speak(utterance);
     }
 
@@ -59,7 +59,9 @@ function sendTextToOllama(text) {
     const now = new Date();
     const time = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
     
-    const systemPrompt = `Tu es un serveur dans un restaurant. Un client t'appelle. La date d'aujourd'hui est ${today}, il est ${time}. Réponds en français de manière claire et concise, en rappelant uniquement la date de la réservation, l'heure, ainsi que le nombre de personnes (sous forme de liste).`;
+    const systemPrompt = `Tu es un serveur dans un restaurant. 
+    Ton rôle est de prendre les réservations au téléphone, et de recueilir le nom, le nombre de personnes, la date et l'heure de la réservation.
+    Pour référence, la date du jour est ${today} à ${time}. `;
     
     fetch('http://localhost:11434/api/generate', {
       method: 'POST',
@@ -76,7 +78,7 @@ function sendTextToOllama(text) {
     .then(response => response.json())
     .then(data => {
       console.log('Ollama response:', data.response);
-      displayMessage('Ollama: ' + data.response);
+      displayMessage('OLLAMA: ' + data.response);
       speak(data.response);   
     })
     .catch(error => console.error('Error fetching from Ollama:', error));

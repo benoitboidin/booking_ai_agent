@@ -19,4 +19,4 @@ def process_voice():
     return jsonify({"status": "success", "message": "Voice processed successfully!", "text": text})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True) 
