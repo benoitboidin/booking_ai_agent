@@ -1,6 +1,73 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const path = require('path');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 5050;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+console.log('API Key:', GEMINI_API_KEY); // Log the API key to ensure it's being loaded
+
+// Middleware
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'static')));
+
+// Routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'templates', 'index.html'));
+});
+
+app.post('/process', async (req, res) => {
+  const text = req.body.text || '';
+
+  if (!text) {
+    return res.json({ status: 'error', message: 'No text provided!' });
+  }
+
+  console.log('You said:', text);
+
+  try {
+    const fetch = (await import('node-fetch')).default;
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: text }]
+        }]
+      })
+    });
+
+    console.log('Gemini API response:', response);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Gemini API error:', errorData);
+      return res.json({ status: 'error', message: 'Error communicating with Gemini', details: errorData });
+    }
+
+    const data = await response.json();
+    const aiResponse = data.candidates[0].output;
+    console.log('AI response:', aiResponse);
+
+    return res.json({ status: 'success', message: 'Voice processed successfully!', text: text, aiResponse: aiResponse });
+  } catch (error) {
+    console.error('Error communicating with Gemini:', error);
+    return res.json({ status: 'error', message: 'Error communicating with Gemini', details: error.message });
+  }
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
 function startRecognition() {
   if (!('webkitSpeechRecognition' in window)) {
-    alert('Your browser does not support speech recognition.');
+    alert('Your browser does not support speech recognition. Please use Google Chrome.');
     return;
   }
 
@@ -27,8 +94,8 @@ function startRecognition() {
     const transcript = event.results[0][0].transcript;
     console.log('You said:', transcript);
     
-    displayMessage('YOU: ' + transcript);
-    sendTextToOllama(transcript);
+    displayMessage('You: ' + transcript);
+    sendTextToServer(transcript);
   };
 
   recognition.onerror = function(event) {
@@ -46,44 +113,24 @@ function startRecognition() {
   recognition.start();
 }
 
-function speak(text) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'fr';
-    speechSynthesis.speak(utterance);
+function sendTextToServer(text) {
+  fetch('/process', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ text: text })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data.message);
+    console.log('Server response:', data.text);
+    displayMessage('Server: ' + data.text);
+    if (data.aiResponse) {
+      displayMessage('AI: ' + data.aiResponse);
     }
-
-function sendTextToOllama(text) {
-    const today = new Date().toLocaleDateString('fr-FR', {
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-    });
-    const now = new Date();
-    const time = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    
-    const systemPrompt = `Tu es un serveur dans un restaurant. 
-    Ton rôle est de prendre les réservations au téléphone, et de recueilir le nom, le nombre de personnes, la date et l'heure de la réservation.
-    Pour référence, la date du jour est ${today} à ${time}. `;
-    
-    fetch('http://localhost:11434/api/generate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'llama3.2-vision:latest',  // Replace with your Ollama model name
-        prompt: text,
-        system: systemPrompt,
-        stream: false
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Ollama response:', data.response);
-      displayMessage('OLLAMA: ' + data.response);
-      speak(data.response);   
-    })
-    .catch(error => console.error('Error fetching from Ollama:', error));
-  }
-  
+  });
+}
 
 function displayMessage(message) {
   const chatBox = document.getElementById('chat-box');
