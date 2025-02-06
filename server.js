@@ -68,7 +68,15 @@ app.post('/process', async (req, res) => {
     // Add AI response to conversation history
     conversationHistory.push({ role: 'model', parts: [{ text: aiResponse }] });
 
-    return res.json({ status: 'success', message: 'Voice processed successfully!', text: text, aiResponse: aiResponse });
+    // Check if the AI response contains the reservation details in JSON format
+    let reservationDetails;
+    try {
+      reservationDetails = JSON.parse(aiResponse);
+    } catch (e) {
+      reservationDetails = null;
+    }
+
+    return res.json({ status: 'success', message: 'Voice processed successfully!', text: text, aiResponse: aiResponse, reservationDetails: reservationDetails });
   } catch (error) {
     console.error('Error communicating with Gemini:', error);
     return res.json({ status: 'error', message: 'Error communicating with Gemini', details: error.message });

@@ -124,28 +124,59 @@ function sendTextToServer(text) {
   .then(response => response.json())
   .then(data => {
     console.log(data.message);
-    // console.log('Server response:', data.text);
-    // displayMessage('Server: ' + data.text);
+    console.log('Server response:', data.text);
+    displayMessage('Server: ' + data.text);
     if (data.aiResponse) {
       displayMessage('AI: ' + data.aiResponse);
+      if (data.reservationDetails) {
+        updateBookingDetails(data.reservationDetails);
+      }
     }
+  })
+  .catch(error => {
+    console.error('Error:', error);
   });
 }
 
-function displayMessage(message, isUser = false) {
+function displayMessage(message) {
   const chatBox = document.getElementById('chat-box');
   const messageDiv = document.createElement('div');
-  if (isUser) {
-    messageDiv.className = 'chat-message.user';
-    }
-    else {
-    messageDiv.className = 'chat-message.system';
-    }
+  messageDiv.className = 'chat-message';
   messageDiv.textContent = message;
   if (chatBox) {
     chatBox.appendChild(messageDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
   } else {
     console.error('Chat box element not found');
+  }
+}
+
+function updateBookingDetails(details) {
+  if (details.date) {
+    const dateInput = document.getElementById('booking-date');
+    dateInput.value = details.date;
+    dateInput.classList.remove('grey');
+    dateInput.classList.add('green');
+  }
+
+  if (details.heure) {
+    const timeInput = document.getElementById('booking-time');
+    timeInput.value = details.heure;
+    timeInput.classList.remove('grey');
+    timeInput.classList.add('green');
+  }
+
+  if (details.nombre_personnes) {
+    const numberOfClientsInput = document.getElementById('number-of-clients');
+    numberOfClientsInput.value = details.nombre_personnes;
+    numberOfClientsInput.classList.remove('grey');
+    numberOfClientsInput.classList.add('green');
+  }
+
+  if (details.nom) {
+    const userNameInput = document.getElementById('user-name');
+    userNameInput.value = details.nom;
+    userNameInput.classList.remove('grey');
+    userNameInput.classList.add('green');
   }
 }
