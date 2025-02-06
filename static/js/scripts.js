@@ -1,6 +1,6 @@
 function startRecognition() {
   if (!('webkitSpeechRecognition' in window)) {
-    alert('Your browser does not support speech recognition. Please use Google Chrome.');
+    alert('Your browser does not support speech recognition.');
     return;
   }
 

@@ -3,18 +3,14 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice Recorder</title>
+    <title>Bookind AI</title>
     <link rel="stylesheet" href="/css/styles.css">
     <script src="js/scripts.js" defer></script>
   </head>
   <body>
     <div class="container">
       <h1>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-utensils">
-          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
-          <path d="M7 2v20"/>
-          <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
-        </svg>
+        <img src="/assets/servings.svg" alt="Fork and nife icon" class="logo">
         Booking AI
       </h1>
       <div id="chat-box" class="chat-box"></div>
@@ -28,9 +24,9 @@
         </button>
       </div>
       <div class="booking-details">
-        <input type="text" id="user-name" placeholder="User Name" class="booking-input grey" readonly>
-        <input type="number" id="number-of-clients" placeholder="Number of Clients" class="booking-input grey" readonly>
-        <input type="time" id="booking-time" placeholder="Time" class="booking-input grey" readonly>
+        <input type="text" id="user-name" placeholder="Nom" class="booking-input grey" readonly>
+        <input type="number" id="number-of-clients" placeholder="Nombre" class="booking-input grey" readonly>
+        <input type="time" id="booking-time" placeholder="Heure" class="booking-input grey" readonly>
         <input type="date" id="booking-date" placeholder="Date" class="booking-input grey" readonly>
       </div>
     </div>
