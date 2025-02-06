@@ -13,6 +13,9 @@ console.log('API Key:', GEMINI_API_KEY); // Log the API key to ensure it's being
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'static')));
 
+// In-memory conversation history
+let conversationHistory = [];
+
 // Routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'templates', 'index.html'));
@@ -27,6 +30,9 @@ app.post('/process', async (req, res) => {
 
   console.log('You said:', text);
 
+  // Add user message to conversation history
+  conversationHistory.push({ role: 'user', parts: [{ text: text }] });
+
   try {
     const fetch = (await import('node-fetch')).default;
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
@@ -35,9 +41,7 @@ app.post('/process', async (req, res) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        contents: [{
-          parts: [{ text: text }]
-        }]
+        contents: conversationHistory
       })
     });
 
@@ -52,6 +56,9 @@ app.post('/process', async (req, res) => {
     const data = await response.json();
     const aiResponse = data.candidates[0].content.parts[0].text;
     console.log('AI response:', aiResponse);
+
+    // Add AI response to conversation history
+    conversationHistory.push({ role: 'model', parts: [{ text: aiResponse }] });
 
     return res.json({ status: 'success', message: 'Voice processed successfully!', text: text, aiResponse: aiResponse });
   } catch (error) {
