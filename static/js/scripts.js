@@ -1,7 +1,25 @@
 let listening = false;
 let recognition = null; // Store recognition instance
 
-function startRecognition() {
+function speakText(text) {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR'; // Set language to French
+      utterance.rate = 1; // Adjust speed (1 is normal)
+      utterance.pitch = 1; // Adjust pitch (1 is normal)
+      speechSynthesis.speak(utterance);
+    } else {
+      console.error('Speech synthesis is not supported in this browser.');
+    }
+  }
+
+  
+  function startRecognition() {
+    if (!listening) {
+      displayMessage('AI: Bonjour, ici le Café Paris, souhaitez-vous réserver une table?');
+      speakText('Bonjour, ici le Café Paris, souhaitez-vous réserver une table?');
+    }
+
   if (!('webkitSpeechRecognition' in window)) {
     alert('Your browser does not support speech recognition.');
     return;
@@ -84,8 +102,11 @@ async function sendTextToServer(text) {
       if (data.aiResponse) {
         if (data.reservationDetails) {
           updateBookingDetails(data.reservationDetails);
+            displayMessage('AI: Votre réservation a été enregistrée. Merci pour votre appel et à bientôt!');
+            speakText('Votre réservation a été enregistrée. Merci pour votre appel et à bientôt!');
         } else {
           displayMessage('AI: ' + data.aiResponse);
+            speakText(data.aiResponse);
         }
       }
     } catch (error) {
