@@ -104,6 +104,8 @@ async function sendTextToServer(text) {
           updateBookingDetails(data.reservationDetails);
             displayMessage('AI: Votre réservation a été enregistrée. Merci pour votre appel et à bientôt!');
             speakText('Votre réservation a été enregistrée. Merci pour votre appel et à bientôt!');
+            // Toggle button to stop listening
+            startRecognition();
         } else {
           displayMessage('AI: ' + data.aiResponse);
             speakText(data.aiResponse);
