@@ -5,8 +5,8 @@ function speakText(text) {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR'; // Set language to French
-      utterance.rate = 1; // Adjust speed (1 is normal)
-      utterance.pitch = 1; // Adjust pitch (1 is normal)
+      utterance.rate = 1.1; // Adjust speed (1 is normal)
+      utterance.pitch = 0.9; // Adjust pitch (1 is normal)
       speechSynthesis.speak(utterance);
     } else {
       console.error('Speech synthesis is not supported in this browser.');
