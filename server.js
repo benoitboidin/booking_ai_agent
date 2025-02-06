@@ -14,7 +14,22 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'static')));
 
 // In-memory conversation history
-let conversationHistory = [];
+let date = new Date().toLocaleDateString('fr-FR');
+let heure = new Date().toLocaleTimeString('fr-FR');
+console.log(date);
+console.log(heure);
+let conversationHistory = [
+    { role: 'user', parts: [{ text: `System: 
+        Tu es l\'assistant AI du restaurant "Le Café Paris". 
+        Nous sommes le ${date} et il est ${heure}. 
+        Ton rôle est de recueillir auprès de ton interlocuteur les informations de sa réservation :
+        - date
+        - heure
+        - nombre de personne 
+        - nom.
+        Lorsque toutes ces informations sont réunies, tu les réuniras sous forme json.` }] },
+    { role: 'model', parts: [{ text: 'Understood.' }] }
+  ];
 
 // Routes
 app.get('/', (req, res) => {
