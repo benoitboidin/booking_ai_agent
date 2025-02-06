@@ -124,13 +124,14 @@ function sendTextToServer(text) {
   .then(response => response.json())
   .then(data => {
     console.log(data.message);
-    console.log('Server response:', data.text);
-    displayMessage('Server: ' + data.text);
+    // console.log('Server response:', data.text);
+    // displayMessage('Server: ' + data.text);
     if (data.aiResponse) {
-      displayMessage('AI: ' + data.aiResponse);
-      if (data.reservationDetails) {
-        updateBookingDetails(data.reservationDetails);
-      }
+        if (data.reservationDetails) {
+            updateBookingDetails(data.reservationDetails);
+        }else{
+            displayMessage('AI: ' + data.aiResponse);
+        }
     }
   })
   .catch(error => {

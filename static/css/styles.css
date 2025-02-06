@@ -109,6 +109,14 @@
   input[type='number'] {
     -moz-appearance:textfield;
     }
+
+    .booking-input.grey {
+        background-color: #f0f0f0;
+      }
+    
+      .booking-input.green {
+        background-color: #d4edda;
+      }
   
   
   /* .booking-input:focus {
