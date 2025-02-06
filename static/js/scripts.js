@@ -11,7 +11,7 @@ function startRecognition() {
   }
 
   const recognition = new SpeechRecognition();
-  recognition.continuous = false;
+  recognition.continuous = true;
   recognition.interimResults = false;
   recognition.lang = 'fr-FR';
 
@@ -23,11 +23,13 @@ function startRecognition() {
     }
   };
 
+  let sentenceNumber = 0;
   recognition.onresult = function(event) {
-    const transcript = event.results[0][0].transcript;
+    const transcript = event.results[sentenceNumber][0].transcript;
+    sentenceNumber++;
     console.log('You said:', transcript);
     
-    displayMessage('You: ' + transcript, true);
+    displayMessage('You: ' + transcript);
     sendTextToServer(transcript);
   };
 
