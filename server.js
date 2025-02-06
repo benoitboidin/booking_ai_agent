@@ -16,18 +16,11 @@ app.use(express.static(path.join(__dirname, 'static')));
 // In-memory conversation history
 let date = new Date().toLocaleDateString('fr-FR');
 let heure = new Date().toLocaleTimeString('fr-FR');
-console.log(date);
-console.log(heure);
+// read config/system_prompt.txt file
+let prompt = require('fs').readFileSync('config/system_prompt.txt', 'utf-8');
+console.log(prompt);
 let conversationHistory = [
-    { role: 'user', parts: [{ text: `System: 
-        Tu es l\'assistant AI du restaurant "Le Café Paris". 
-        Nous sommes le ${date} et il est ${heure}. 
-        Ton rôle est de recueillir auprès de ton interlocuteur les informations de sa réservation :
-        - date
-        - heure
-        - nombre de personne 
-        - nom.
-        Lorsque toutes ces informations sont réunies, tu les réuniras sous forme json.` }] },
+    { role: 'user', parts: [{ text: `System: Nous sommes le ${date} et il est ${heure}. ${prompt}` }] },
     { role: 'model', parts: [{ text: 'Understood.' }] }
   ];
 
