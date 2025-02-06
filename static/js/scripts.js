@@ -1,6 +1,18 @@
+let listening = false;
+let recognition = null; // Store recognition instance
+
 function startRecognition() {
   if (!('webkitSpeechRecognition' in window)) {
     alert('Your browser does not support speech recognition.');
+    return;
+  }
+
+  if (recognition && listening) {
+    // Stop recognition if it's already running
+    recognition.stop();
+    listening = false;
+    console.log('Speech recognition stopped');
+    document.querySelector('.mic-button').classList.remove('blinking');
     return;
   }
 
@@ -10,17 +22,15 @@ function startRecognition() {
     return;
   }
 
-  const recognition = new SpeechRecognition();
+  recognition = new SpeechRecognition();
   recognition.continuous = true;
   recognition.interimResults = false;
   recognition.lang = 'fr-FR';
 
   recognition.onstart = function() {
+    listening = true;
     console.log('Speech recognition started');
-    const micButton = document.querySelector('.mic-button');
-    if (micButton) {
-      micButton.classList.add('blinking');
-    }
+    document.querySelector('.mic-button').classList.add('blinking');
   };
 
   let sentenceNumber = 0;
@@ -28,7 +38,7 @@ function startRecognition() {
     const transcript = event.results[sentenceNumber][0].transcript;
     sentenceNumber++;
     console.log('You said:', transcript);
-    
+
     displayMessage('You: ' + transcript);
     sendTextToServer(transcript);
   };
@@ -39,14 +49,23 @@ function startRecognition() {
 
   recognition.onend = function() {
     console.log('Speech recognition ended');
-    const micButton = document.querySelector('.mic-button');
-    if (micButton) {
-      micButton.classList.remove('blinking');
-    }
+    listening = false;
+    document.querySelector('.mic-button').classList.remove('blinking');
   };
 
   recognition.start();
 }
+
+function addEventListeners() {
+  const micButton = document.querySelector('.mic-button');
+  if (micButton) {
+    console.log('Adding event listener to mic button');
+    micButton.addEventListener('click', startRecognition);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', addEventListeners);
+
 
 async function sendTextToServer(text) {
     try {
