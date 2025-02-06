@@ -113,31 +113,31 @@ function startRecognition() {
   recognition.start();
 }
 
-function sendTextToServer(text) {
-  fetch('/process', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ text: text })
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log(data.message);
-    // console.log('Server response:', data.text);
-    // displayMessage('Server: ' + data.text);
-    if (data.aiResponse) {
+async function sendTextToServer(text) {
+    try {
+      const response = await fetch('/process', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: text })
+      });
+  
+      const data = await response.json();
+      console.log(data.message);
+      // console.log('Server response:', data.text);
+      // displayMessage('Server: ' + data.text);
+      if (data.aiResponse) {
         if (data.reservationDetails) {
-            updateBookingDetails(data.reservationDetails);
-        }else{
-            displayMessage('AI: ' + data.aiResponse);
+          updateBookingDetails(data.reservationDetails);
+        } else {
+          displayMessage('AI: ' + data.aiResponse);
         }
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
-}
+  }
 
 function displayMessage(message) {
   const chatBox = document.getElementById('chat-box');
