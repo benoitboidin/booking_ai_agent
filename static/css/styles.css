@@ -150,10 +150,6 @@
     transition: background-color 0.3s ease, transform 0.2s ease;
   }
   
-  .mic-button:hover {
-    /* background-color: #d32f2f; */
-  }
-  
   .mic-button:active {
     transform: scale(0.9);
   }
@@ -162,6 +158,11 @@
   .mic-button.blinking {
     animation: blink 1.2s infinite;
     background-color: #ff3b30;
+    transform: rotate(135deg);
+  }
+
+  .mic-button.blinking:active {
+    transform: scale(0.9)
   }
   
   @keyframes blink {
