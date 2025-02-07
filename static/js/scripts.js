@@ -14,13 +14,6 @@ function speakText(text) {
   }
 
   function startRecognition() {
-    if (!listening) {
-      // Add timer to say hello after 2 seconds
-      setTimeout(() => {
-        displayMessage('AI: Bonjour, ici le Café Paris, souhaitez-vous réserver une table?');
-        speakText('Bonjour, ici le Café Paris, souhaitez-vous réserver une table?');
-      }, 2000);
-    }
 
   if (!('webkitSpeechRecognition' in window)) {
     alert('Your browser does not support speech recognition.');
@@ -57,8 +50,6 @@ var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
   recognition.onresult = function(event) {
     const transcript = event.results[sentenceNumber][0].transcript;
     sentenceNumber++;
-    console.log('You said:', transcript);
-
     displayMessage('You: ' + transcript);
     sendTextToServer(transcript);
   };
@@ -136,30 +127,30 @@ function updateBookingDetails(details) {
   console.log('Updating booking details:', details);
 
   if (details.date) {
-    const dateInput = document.getElementById('booking-date');
-    dateInput.value = details.date;
-    dateInput.classList.remove('grey');
-    dateInput.classList.add('green');
+    const dateSpan = document.getElementById('booking-date');
+    dateSpan.textContent = details.date;
+    dateSpan.style.display = 'inline';
+    dateSpan.classList.add('filled');
   }
 
   if (details.heure) {
-    const timeInput = document.getElementById('booking-time');
-    timeInput.value = details.heure;
-    timeInput.classList.remove('grey');
-    timeInput.classList.add('green');
+    const timeSpan = document.getElementById('booking-time');
+    timeSpan.textContent = details.heure;
+    timeSpan.style.display = 'inline';
+    timeSpan.classList.add('filled');
   }
 
   if (details.nombre_personnes) {
-    const numberOfClientsInput = document.getElementById('number-of-clients');
-    numberOfClientsInput.value = details.nombre_personnes;
-    numberOfClientsInput.classList.remove('grey');
-    numberOfClientsInput.classList.add('green');
+    const numberOfClientsSpan = document.getElementById('number-of-clients');
+    numberOfClientsSpan.textContent = details.nombre_personnes + ' personnes';
+    numberOfClientsSpan.style.display = 'inline';
+    numberOfClientsSpan.classList.add('filled');
   }
 
   if (details.nom) {
-    const userNameInput = document.getElementById('user-name');
-    userNameInput.value = details.nom;
-    userNameInput.classList.remove('grey');
-    userNameInput.classList.add('green');
+    const userNameSpan = document.getElementById('user-name');
+    userNameSpan.textContent = details.nom;
+    userNameSpan.style.display = 'inline';
+    userNameSpan.classList.add('filled');
   }
 }

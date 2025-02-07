@@ -3,15 +3,14 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Café Paris
-    </title>
+    <title>Café Paris</title>
     <link rel="stylesheet" href="/css/styles.css">
     <script src="js/scripts.js" defer></script>
   </head>
   <body>
     <div class="container">
       <h1>
-        <img src="/assets/servings.svg" alt="Fork and nife icon" class="logo">
+        <img src="/assets/servings.svg" alt="Fork and knife icon" class="logo">
         Café Paris
       </h1>
       <div id="chat-box" class="chat-box"></div>
@@ -21,10 +20,10 @@
         </button>
       </div>
       <div class="booking-details">
-        <input type="text" id="user-name" placeholder="Nom" class="booking-input grey" readonly>
-        <input type="number" id="number-of-clients" placeholder="Nombre" class="booking-input grey" readonly>
-        <input type="time" id="booking-time" placeholder="Heure" class="booking-input grey" readonly>
-        <input type="date" id="booking-date" placeholder="Date" class="booking-input grey" readonly>
+        <span id="user-name" class="booking-info" style="display: none;">Nom</span>
+        <span id="number-of-clients" class="booking-info" style="display: none;">Nombre</span>
+        <span id="booking-time" class="booking-info" style="display: none;">Heure</span>
+        <span id="booking-date" class="booking-info" style="display: none;">Date</span>
       </div>
     </div>
   </body>
