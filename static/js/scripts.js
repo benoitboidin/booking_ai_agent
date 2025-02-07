@@ -13,11 +13,13 @@ function speakText(text) {
     }
   }
 
-  
   function startRecognition() {
     if (!listening) {
-      displayMessage('AI: Bonjour, ici le Café Paris, souhaitez-vous réserver une table?');
-      speakText('Bonjour, ici le Café Paris, souhaitez-vous réserver une table?');
+      // Add timer to say hello after 2 seconds
+      setTimeout(() => {
+        displayMessage('AI: Bonjour, ici le Café Paris, souhaitez-vous réserver une table?');
+        speakText('Bonjour, ici le Café Paris, souhaitez-vous réserver une table?');
+      }, 2000);
     }
 
   if (!('webkitSpeechRecognition' in window)) {
@@ -34,7 +36,7 @@ function speakText(text) {
     return;
   }
 
-  const SpeechRecognition = window.webkitSpeechRecognition || null;
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
   if (!SpeechRecognition) {
     console.error('SpeechRecognition is not supported in this browser.');
     return;
@@ -86,6 +88,7 @@ document.addEventListener('DOMContentLoaded', addEventListeners);
 
 
 async function sendTextToServer(text) {
+    console.log('Sending text to server:', text);
     try {
       const response = await fetch('/process', {
         method: 'POST',
@@ -102,8 +105,8 @@ async function sendTextToServer(text) {
       if (data.aiResponse) {
         if (data.reservationDetails) {
           updateBookingDetails(data.reservationDetails);
-            displayMessage('AI: Votre réservation a été enregistrée. Merci pour votre appel et à bientôt!');
-            speakText('Votre réservation a été enregistrée. Merci pour votre appel et à bientôt!');
+            displayMessage('AI: Réservation enregistrée. Merci et à bientôt!');
+            speakText('Réservation enregistrée. Merci et à bientôt!');
             // Toggle button to stop listening
             startRecognition();
         } else {
@@ -130,6 +133,8 @@ function displayMessage(message) {
 }
 
 function updateBookingDetails(details) {
+  console.log('Updating booking details:', details);
+
   if (details.date) {
     const dateInput = document.getElementById('booking-date');
     dateInput.value = details.date;

@@ -17,13 +17,16 @@ app.use(express.static(path.join(__dirname, 'static')));
 // In-memory conversation history
 let date = new Date().toLocaleDateString('fr-FR');
 let heure = new Date().toLocaleTimeString('fr-FR');
+
 // read config/system_prompt.txt file
 let prompt = require('fs').readFileSync('config/system_prompt.txt', 'utf-8');
 console.log(prompt);
+
 let conversationHistory = [
     { role: 'user', parts: [{ text: `System: Nous sommes le ${date} et il est ${heure}. ${prompt}` }] },
     { role: 'model', parts: [{ text: 'Understood.' }] }
   ];
+
 
 // Routes
 app.get('/', (req, res) => {
