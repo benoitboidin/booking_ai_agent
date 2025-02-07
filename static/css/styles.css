@@ -84,7 +84,7 @@
     grid-template-columns: repeat(2, 1fr); /* Two columns */
     gap: 12px;
     width: 100%;
-    margin-bottom: 90px; /* Space for mic button */
+    margin-bottom: 120px; /* Space for mic button */
   }
   
   /* Booking Info Spans */
