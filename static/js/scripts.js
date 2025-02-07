@@ -36,7 +36,7 @@ var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
   }
 
   recognition = new SpeechRecognition();
-  recognition.continuous = true;
+  recognition.continuous = true; 
   recognition.interimResults = false;
   recognition.lang = 'fr-FR';
 
@@ -130,6 +130,7 @@ function updateBookingDetails(details) {
     const dateSpan = document.getElementById('booking-date');
     dateSpan.textContent = details.date;
     dateSpan.style.display = 'inline';
+    dateSpan.classList.remove('empty');
     dateSpan.classList.add('filled');
   }
 
@@ -137,6 +138,7 @@ function updateBookingDetails(details) {
     const timeSpan = document.getElementById('booking-time');
     timeSpan.textContent = details.heure;
     timeSpan.style.display = 'inline';
+    timeSpan.classList.remove('empty');
     timeSpan.classList.add('filled');
   }
 
@@ -144,6 +146,7 @@ function updateBookingDetails(details) {
     const numberOfClientsSpan = document.getElementById('number-of-clients');
     numberOfClientsSpan.textContent = details.nombre_personnes + ' personnes';
     numberOfClientsSpan.style.display = 'inline';
+    numberOfClientsSpan.classList.remove('empty');
     numberOfClientsSpan.classList.add('filled');
   }
 
@@ -151,6 +154,7 @@ function updateBookingDetails(details) {
     const userNameSpan = document.getElementById('user-name');
     userNameSpan.textContent = details.nom;
     userNameSpan.style.display = 'inline';
+    userNameSpan.classList.remove('empty');
     userNameSpan.classList.add('filled');
   }
 }

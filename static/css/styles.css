@@ -87,39 +87,54 @@
     margin-bottom: 120px; /* Space for mic button */
   }
   
-  /* Booking Info Spans */
-  .booking-info {
-    display: flex;
-    align-items: center;
-    padding: 16px 16px 16px 36px; /* Add padding to the left for the green dot */
-    font-size: 18px;
-    border-radius: 12px;
-    background-color: #f9f9f9;
-    transition: all 0.2s ease;
-    text-align: left;
-    position: relative;
-  }
+/* Booking Info Spans */
+.booking-info {
+  display: flex;
+  align-items: center;
+  padding: 16px 16px 16px 36px; /* Space for the dot */
+  font-size: 18px;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  transition: all 0.2s ease;
+  text-align: left;
+  position: relative;
+  color: #6c757d; /* Default text color */
+}
 
-  .booking-info::before {
-    content: '';
-    width: 10px;
-    height: 10px;
-    background-color: #28a745; /* Green dot */
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 10px;
-    transform: translateY(-50%);
-    display: none; /* Initially hidden */
-  }
+/* Dot before booking info */
+.booking-info::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background-color: #fd7e14; /* Default orange dot */
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  display: block; /* Always visible */
+}
 
-  .booking-info.filled::before {
-    display: block; /* Show green dot when filled */
-  }
+/* Filled state */
+.booking-info.filled {
+  background-color: #d4edda; /* Light green */
+  color: #155724; /* Dark green text */
+}
 
-  .booking-info.filled {
-    background-color: #d4edda; /* Light green background when filled */
-  }
+.booking-info.filled::before {
+  background-color: #28a745; /* Green dot */
+}
+
+/* Empty state */
+.booking-info.empty {
+  background-color: #fcf4d8; /* Light yellow */
+  color: #856404; /* Dark yellow text */
+}
+
+.booking-info.empty::before {
+  background-color: #fd7e14; /* Orange dot */
+}
+
   
   /* Mic Button */
   .mic-button-container {
