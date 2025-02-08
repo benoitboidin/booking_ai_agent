@@ -25,9 +25,10 @@ var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
 
   let sentenceNumber = 0;
   recognition.onresult = function(event) {
-    const transcript = event.results[sentenceNumber][0].transcript;
+    const transcript = event.results[0][0].transcript;
+    console.log(sentenceNumber, 'Transcript:', transcript);
     sentenceNumber++;
-    displayMessage('You: ' + transcript, true);
+    displayMessage(transcript, true);
     sendTextToServer(transcript);
   };
 
@@ -42,7 +43,6 @@ var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
       recognition.start();
     }
   };
-
   recognition.start();
 }
 
@@ -85,11 +85,11 @@ async function sendTextToServer(text) {
       if (data.aiResponse) {
         if (data.reservationDetails) {
           updateBookingDetails(data.reservationDetails);
-            displayMessage('AI: Réservation enregistrée. Merci et à bientôt!');
-            speakText('Réservation enregistrée. Merci et à bientôt!');
+          displayMessage('Réservation enregistrée. Merci et à bientôt!', false);
+          speakText('Réservation enregistrée. Merci et à bientôt!');
         } else {
-          displayMessage('AI: ' + data.aiResponse, false);
-            speakText(data.aiResponse);
+          displayMessage(data.aiResponse, false);
+          speakText(data.aiResponse);
         }
       }
     } catch (error) {

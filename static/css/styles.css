@@ -27,7 +27,7 @@
     /* max-width: 420px; */
     height: 100%;
     padding: 20px;
-    margin-bottom: 90px; /* Space for mic button */
+    margin-bottom: 70px; /* Space for mic button */
     background-color: white;
     overflow: hidden;
   }
@@ -51,7 +51,7 @@
     padding: 15px;
     overflow-y: auto;
     background-color: #f2f2f2;
-    border-radius: 12px;
+    border-radius: 30px;
     margin: 15px 0;
     /* box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.1); */
   }
@@ -60,7 +60,7 @@
   .chat-message {
     margin-bottom: 10px;
     padding: 12px;
-    border-radius: 10px;
+    border-radius: 20px;
     font-size: 18px;
     line-height: 1.4;
     max-width: 80%;
@@ -94,7 +94,7 @@
   align-items: center;
   padding: 16px 16px 16px 36px; /* Space for the dot */
   font-size: 18px;
-  border-radius: 12px;
+  border-radius: 30px;
   background-color: #f9f9f9;
   transition: all 0.2s ease;
   text-align: left;
@@ -111,7 +111,7 @@
   border-radius: 50%;
   position: absolute;
   top: 50%;
-  left: 10px;
+  left: 20px;
   transform: translateY(-50%);
   display: block; /* Always visible */
 }
@@ -130,6 +130,8 @@
 .booking-info.empty {
   background-color: #fcf4d8; /* Light yellow */
   color: #856404; /* Dark yellow text */
+  padding: 16px 16px 18px 40px; /* Space for the dot */
+
 }
 
 .booking-info.empty::before {
