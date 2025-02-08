@@ -1,6 +1,8 @@
 let listening = false;
 let recognition = null; // Store recognition instance
 
+window.scrollTo(0,1); // Hide the address bar on mobile devices
+
 function startRecognition() {
 
   if (!('webkitSpeechRecognition' in window)) {
@@ -11,6 +13,10 @@ function startRecognition() {
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
   if (!SpeechRecognition) {
     console.error('SpeechRecognition is not supported in this browser.');
+    const micButton = document.querySelector('.mic-button');
+    if (micButton) {
+      micButton.classList.remove('blinking');
+    }
     return;
   }
 
@@ -18,6 +24,10 @@ var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
   recognition.continuous = false; // true doesn't work on Android devices.
   recognition.interimResults = false;
   recognition.lang = 'fr-FR';
+
+  let welcomeMessage = 'Bienvenue au Café Paris, puis-je prendre votre réservation?';
+  displayMessage(welcomeMessage, false);
+  speakText(welcomeMessage);
 
   recognition.onstart = function() {
     console.log('Speech recognition started');
@@ -60,6 +70,8 @@ function addEventListeners() {
             listening = false;
             micButton.classList.remove('blinking');
             recognition.stop();
+            // stop speech synthesis
+            speechSynthesis.cancel();
         }
       }
     );
@@ -160,6 +172,15 @@ function updateBookingDetails(details) {
     userNameSpan.style.display = 'inline';
     userNameSpan.classList.remove('empty');
     userNameSpan.classList.add('filled');
+  }
+
+  // If every detail is filled, stop listening
+  if (details.date && details.heure && details.nombre_personnes && details.nom) {
+    listening = false;
+    const micButton = document.querySelector('.mic-button');
+    if (micButton) {
+      micButton.classList.remove('blinking');
+    }
   }
 }
 
