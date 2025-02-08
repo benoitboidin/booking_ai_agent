@@ -69,11 +69,12 @@
   
   .chat-message.user {
     background-color: #007aff;
-    color: red;
-    align-self: flex-end;
+    color: white;
+    /* align-self: flex-end; //Doesn't work */
+    margin-left: auto;
   }
   
-  .chat-message.system {
+  .chat-message.ai {
     background-color: white;
     align-self: flex-start;
   }

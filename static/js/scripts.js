@@ -27,7 +27,7 @@ var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
   recognition.onresult = function(event) {
     const transcript = event.results[sentenceNumber][0].transcript;
     sentenceNumber++;
-    displayMessage('You: ' + transcript);
+    displayMessage('You: ' + transcript, true);
     sendTextToServer(transcript);
   };
 
@@ -88,7 +88,7 @@ async function sendTextToServer(text) {
             displayMessage('AI: Réservation enregistrée. Merci et à bientôt!');
             speakText('Réservation enregistrée. Merci et à bientôt!');
         } else {
-          displayMessage('AI: ' + data.aiResponse);
+          displayMessage('AI: ' + data.aiResponse, false);
             speakText(data.aiResponse);
         }
       }
@@ -97,10 +97,15 @@ async function sendTextToServer(text) {
     }
 }
 
-function displayMessage(message) {
+function displayMessage(message, user=true) {
   const chatBox = document.getElementById('chat-box');
   const messageDiv = document.createElement('div');
   messageDiv.className = 'chat-message';
+    if (user) {
+        messageDiv.classList.add('user');
+    } else {
+        messageDiv.classList.add('ai');
+    }
   messageDiv.textContent = message;
   if (chatBox) {
     chatBox.appendChild(messageDiv);
