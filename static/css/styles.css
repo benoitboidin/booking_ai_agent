@@ -70,6 +70,7 @@
   .chat-message.user {
     background-color: #007aff;
     color: white;
+    /* align-self: flex-end; //Doesn't work */
     margin-left: auto;
   }
   
@@ -119,7 +120,6 @@
 .booking-info.filled {
   background-color: #d4edda; /* Light green */
   color: #155724; /* Dark green text */
-  padding: 12px 16px 14px 40px; /* Space for the dot */
 }
 
 .booking-info.filled::before {
@@ -130,7 +130,8 @@
 .booking-info.empty {
   background-color: #fcf4d8; /* Light yellow */
   color: #856404; /* Dark yellow text */
-  padding: 12px 16px 14px 40px; /* Space for the dot */
+  padding: 16px 16px 18px 40px; /* Space for the dot */
+
 }
 
 .booking-info.empty::before {
