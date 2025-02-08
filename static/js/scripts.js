@@ -39,7 +39,7 @@ var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
     console.log(sentenceNumber, 'Transcript:', transcript);
     sentenceNumber++;
     displayMessage(transcript, true);
-    sendTextToServer(transcript);
+    sendTextToServer(new Date().toLocaleTimeString('fr-FR'), transcript);
   };
 
   recognition.onerror = function(event) {
@@ -179,6 +179,7 @@ function updateBookingDetails(details) {
     listening = false;
     const micButton = document.querySelector('.mic-button');
     if (micButton) {
+      recognition.stop();
       micButton.classList.remove('blinking');
     }
   }
