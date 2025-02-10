@@ -176,11 +176,10 @@ async function sendTextToServer(text) {
       if (result.data) {
         updateBookingDetails(result.data);
       }
-
-      if (data.nom && data.date && data.heure && data.nombre_personnes) {
+      if (result.data.nom && result.data.date && result.data.heure && result.data.nombre_personnes) {
         recognition.stop(); 
         listening = false;  
-        updateBookingDetails(data.reservationDetails);
+        updateBookingDetails(result.data);
         displayMessage('Réservation enregistrée. Merci et à bientôt!', false);
         playByText('fr-FR', 'Réservation enregistrée. Merci et à bientôt!');
         const micButton = document.querySelector('.mic-button');
