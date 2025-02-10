@@ -1,5 +1,6 @@
 let listening = false;
 let recognition = null; // Store recognition instance
+let conversationHistory = []; // Store conversation history for each user
 
 function startRecognition() {
   if (!('webkitSpeechRecognition' in window)) {
@@ -28,6 +29,7 @@ function startRecognition() {
     console.log(sentenceNumber, 'Transcript:', transcript);
     sentenceNumber++;
     displayMessage(transcript, true);
+    conversationHistory.push({ role: 'user', parts: [{ text: transcript }] });
     sendTextToServer(transcript);
   };
 
@@ -37,13 +39,11 @@ function startRecognition() {
 
   recognition.onend = function() {
     console.log('Speech recognition ended');
-    if (listening) {
-      console.log('Restarting speech recognition (until mic button is clicked)');
-      recognition.start();
-    }
-  };
-
+};
+if (listening) {
+  console.log('Restarting speech recognition (until mic button is clicked)');
   recognition.start();
+}
 }
 
 function addEventListeners() {
@@ -52,6 +52,18 @@ function addEventListeners() {
     console.log('Adding event listener to mic button');
     micButton.addEventListener('click', function() {
       console.log('Mic button clicked');
+
+      let hasEnabledVoice = false;  
+      document.addEventListener('click', () => {
+      if (hasEnabledVoice) {
+          return;
+      }
+      const lecture = new SpeechSynthesisUtterance('hello');
+      lecture.volume = 0;
+      speechSynthesis.speak(lecture);
+      hasEnabledVoice = true;
+      });
+
       if (!listening) {
         listening = true;
         micButton.classList.add('blinking');
@@ -66,7 +78,15 @@ function addEventListeners() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', addEventListeners);
+document.addEventListener('DOMContentLoaded', () => {
+  addEventListeners();
+  // Initialize conversation history with system prompt
+  let date = new Date().toLocaleDateString('fr-FR');
+  let heure = new Date().toLocaleTimeString('fr-FR');
+  let prompt = 'Nous sommes le ' + date + ' et il est ' + heure + '. ' + document.getElementById('system-prompt').textContent;
+  conversationHistory.push({ role: 'user', parts: [{ text: `System: ${prompt}` }] });
+  conversationHistory.push({ role: 'model', parts: [{ text: 'Understood.' }] });
+});
 
 async function sendTextToServer(text) {
   console.log('Sending text to server:', text);
@@ -76,12 +96,13 @@ async function sendTextToServer(text) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ text: text })
+      body: JSON.stringify({ text: text, conversationHistory: conversationHistory })
     });
 
     const data = await response.json();
     console.log(data.message);
     if (data.aiResponse) {
+      conversationHistory.push({ role: 'model', parts: [{ text: data.aiResponse }] });
       if (data.reservationDetails) {
         recognition.stop(); 
         listening = false;  
@@ -127,7 +148,9 @@ function speakText(text, callback) {
     utterance.rate = 1.1; // Adjust speed (1 is normal)
     utterance.pitch = 0.9; // Adjust pitch (1 is normal)
     utterance.onend = function() {
+    console.log('Speech synthesis finished');
       if (callback) {
+        console.log('Callback after speech synthesis');
         callback();
       }
     };
