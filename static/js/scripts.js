@@ -71,21 +71,23 @@ document.addEventListener('click', () => {
   hasEnabledVoice = true;
 });
 
-function fetchSystemPrompt() {
-  fetch('/system-prompt')
-    .then(response => response.json())
-    .then(data => {
-      const prompt = data.prompt;
-      let date = new Date().toLocaleDateString('fr-FR');
-      let heure = new Date().toLocaleTimeString('fr-FR');
-      let systemPrompt = 'Nous sommes le ' + date + ' et il est ' + heure + '. ' + prompt;
-      console.log('System prompt:', systemPrompt);
-      conversationHistory.push({ role: 'user', parts: [{ text: `System: ${systemPrompt}` }] });
-      conversationHistory.push({ role: 'model', parts: [{ text: 'Understood.' }] });
-    })
-    .catch(error => {
-      console.error('Error fetching system prompt:', error);
-    });
+async function fetchSystemPrompt() {
+  try {
+    const response = await fetch('/system-prompt');
+    const data = await response.json();
+    
+    const prompt = data.prompt;
+    let date = new Date().toLocaleDateString('fr-FR');
+    let heure = new Date().toLocaleTimeString('fr-FR');
+    let systemPrompt = `Nous sommes le ${date} et il est ${heure}. ${prompt}`;
+    
+    console.log('System prompt:', systemPrompt);
+    
+    conversationHistory.push({ role: 'user', parts: [{ text: `System: ${systemPrompt}` }] });
+    conversationHistory.push({ role: 'model', parts: [{ text: 'Understood.' }] });
+  } catch (error) {
+    console.error('Error fetching system prompt:', error);
+  }
 }
 
 function startRecognition() {
