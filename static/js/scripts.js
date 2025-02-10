@@ -83,11 +83,11 @@ async function sendTextToServer(text) {
     console.log(data.message);
     if (data.aiResponse) {
       if (data.reservationDetails) {
+        recognition.stop(); 
+        listening = false;  
         updateBookingDetails(data.reservationDetails);
         displayMessage('Réservation enregistrée. Merci et à bientôt!', false);
         speakText('Réservation enregistrée. Merci et à bientôt!');
-        recognition.stop(); 
-        listening = false;  
         const micButton = document.querySelector('.mic-button');
         if (micButton) {
           micButton.classList.remove('blinking');
