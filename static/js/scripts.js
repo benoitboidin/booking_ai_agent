@@ -2,13 +2,12 @@ let listening = false;
 let recognition = null; // Store recognition instance
 
 function startRecognition() {
-
   if (!('webkitSpeechRecognition' in window)) {
     alert('Your browser does not support speech recognition.');
     return;
   }
 
-var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+  var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
   if (!SpeechRecognition) {
     console.error('SpeechRecognition is not supported in this browser.');
     return;
@@ -29,7 +28,7 @@ var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
     console.log(sentenceNumber, 'Transcript:', transcript);
     sentenceNumber++;
     displayMessage(transcript, true);
-    sendTextToServer(new Date().toLocaleTimeString('fr-FR'), transcript);
+    sendTextToServer(transcript);
   };
 
   recognition.onerror = function(event) {
@@ -43,6 +42,7 @@ var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
       recognition.start();
     }
   };
+
   recognition.start();
 }
 
@@ -51,61 +51,66 @@ function addEventListeners() {
   if (micButton) {
     console.log('Adding event listener to mic button');
     micButton.addEventListener('click', function() {
-        console.log('Mic button clicked');
-        if (!listening) {
-            listening = true;
-            micButton.classList.add('blinking');
-            startRecognition();
-        }else{
-            listening = false;
-            micButton.classList.remove('blinking');
-            recognition.stop();
-        }
+      console.log('Mic button clicked');
+      if (!listening) {
+        listening = true;
+        micButton.classList.add('blinking');
+        startRecognition();
+      } else {
+        listening = false;
+        micButton.classList.remove('blinking');
+        recognition.stop();
+        speechSynthesis.cancel();
       }
-    );
+    });
   }
 }
 
 document.addEventListener('DOMContentLoaded', addEventListeners);
 
-
 async function sendTextToServer(text) {
-    console.log('Sending text to server:', text);
-    try {
-      const response = await fetch('/process', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ text: text })
-      });
-  
-      const data = await response.json();
-      console.log(data.message);
-      if (data.aiResponse) {
-        if (data.reservationDetails) {
-          updateBookingDetails(data.reservationDetails);
-          displayMessage('Réservation enregistrée. Merci et à bientôt!', false);
-          speakText('Réservation enregistrée. Merci et à bientôt!');
-        } else {
-          displayMessage(data.aiResponse, false);
-          speakText(data.aiResponse);
+  console.log('Sending text to server:', text);
+  try {
+    const response = await fetch('/process', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text: text })
+    });
+
+    const data = await response.json();
+    console.log(data.message);
+    if (data.aiResponse) {
+      if (data.reservationDetails) {
+        updateBookingDetails(data.reservationDetails);
+        displayMessage('Réservation enregistrée. Merci et à bientôt!', false);
+        speakText('Réservation enregistrée. Merci et à bientôt!');
+        recognition.stop(); 
+        listening = false;  
+        const micButton = document.querySelector('.mic-button');
+        if (micButton) {
+          micButton.classList.remove('blinking');
         }
+      } else {
+        displayMessage(data.aiResponse, false);
+        speakText(data.aiResponse, startRecognition);
       }
-    } catch (error) {
-      console.error('Error:', error);
     }
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
 
-function displayMessage(message, user=true) {
+function displayMessage(message, user = true) {
   const chatBox = document.getElementById('chat-box');
   const messageDiv = document.createElement('div');
   messageDiv.className = 'chat-message';
-    if (user) {
-        messageDiv.classList.add('user');
-    } else {
-        messageDiv.classList.add('ai');
-    }
+  if (user) {
+    messageDiv.classList.add('user');
+  } else {
+    messageDiv.classList.add('ai');
+  }
   messageDiv.textContent = message;
   if (chatBox) {
     chatBox.appendChild(messageDiv);
@@ -115,16 +120,21 @@ function displayMessage(message, user=true) {
   }
 }
 
-function speakText(text) {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'fr-FR'; // Set language to French
-      utterance.rate = 1.1; // Adjust speed (1 is normal)
-      utterance.pitch = 0.9; // Adjust pitch (1 is normal)
-      speechSynthesis.speak(utterance);
-    } else {
-      console.error('Speech synthesis is not supported in this browser.');
-    }
+function speakText(text, callback) {
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'fr-FR'; // Set language to French
+    utterance.rate = 1.1; // Adjust speed (1 is normal)
+    utterance.pitch = 0.9; // Adjust pitch (1 is normal)
+    utterance.onend = function() {
+      if (callback) {
+        callback();
+      }
+    };
+    speechSynthesis.speak(utterance);
+  } else {
+    console.error('Speech synthesis is not supported in this browser.');
+  }
 }
 
 function updateBookingDetails(details) {
