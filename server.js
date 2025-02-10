@@ -26,7 +26,7 @@ app.get('/system-prompt', (req, res) => {
       console.error('Error reading system prompt:', err);
       return res.status(500).json({ status: 'error', message: 'Error reading system prompt' });
     }
-    res.json({ prompt: data });
+    return res.json({ prompt: data });
   });
 });
 

@@ -48,7 +48,7 @@ function playByText(locale, text, onEnd) {
   }
 
   _speechSynth.cancel(); // cancel current speak, if any is running
-    _speechSynth.speak(utterance);
+  _speechSynth.speak(utterance);
 }
 
 // Initialize voices on document ready
@@ -211,10 +211,14 @@ function displayMessage(message, user = true) {
 
 function updateField(fieldId, value, suffix = '') {
   const element = document.getElementById(fieldId);
-  element.textContent = value + suffix;
-  element.style.display = 'inline';
-  element.classList.remove('empty');
-  element.classList.add('filled');
+  if (element) {
+    element.textContent = value + suffix;
+    element.style.display = 'inline';
+    element.classList.remove('empty');  
+    element.classList.add('filled');
+  } else {
+    console.error('Element not found:', fieldId);
+  }
 }
 
 function updateBookingDetails(details) {
