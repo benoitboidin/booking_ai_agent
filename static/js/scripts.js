@@ -207,39 +207,20 @@ function displayMessage(message, user = true) {
   }
 }
 
+function updateField(fieldId, value, suffix = '') {
+  const element = document.getElementById(fieldId);
+  element.textContent = value + suffix;
+  element.style.display = 'inline';
+  element.classList.remove('empty');
+  element.classList.add('filled');
+}
+
 function updateBookingDetails(details) {
   console.log('Updating booking details:', details);
-
-  if (details.date) {
-    const dateSpan = document.getElementById('booking-date');
-    dateSpan.textContent = details.date;
-    dateSpan.style.display = 'inline';
-    dateSpan.classList.remove('empty');
-    dateSpan.classList.add('filled');
-  }
-
-  if (details.heure) {
-    const timeSpan = document.getElementById('booking-time');
-    timeSpan.textContent = details.heure;
-    timeSpan.style.display = 'inline';
-    timeSpan.classList.remove('empty');
-    timeSpan.classList.add('filled');
-  }
-
-  if (details.nombre_personnes) {
-    const numberOfClientsSpan = document.getElementById('number-of-clients');
-    numberOfClientsSpan.textContent = details.nombre_personnes + ' personnes';
-    numberOfClientsSpan.style.display = 'inline';
-    numberOfClientsSpan.classList.remove('empty');
-    numberOfClientsSpan.classList.add('filled');
-  }
-
-  if (details.nom) {
-    const userNameSpan = document.getElementById('user-name');
-    userNameSpan.textContent = details.nom;
-    userNameSpan.style.display = 'inline';
-    userNameSpan.classList.remove('empty');
-    userNameSpan.classList.add('filled');
-  }
+  if (details.date) updateField('booking-date', details.date);
+  if (details.heure) updateField('booking-time', details.heure);
+  if (details.nombre_personnes) updateField('number-of-clients', details.nombre_personnes, ' personnes');
+  if (details.nom) updateField('user-name', details.nom);
 }
+
 
