@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 require('dotenv').config();
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 5050;
@@ -17,6 +18,16 @@ app.use(express.static(path.join(__dirname, 'static')));
 // Routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'templates', 'index.html'));
+});
+
+app.get('/system-prompt', (req, res) => {
+  fs.readFile('config/system_prompt.txt', 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading system prompt:', err);
+      return res.status(500).json({ status: 'error', message: 'Error reading system prompt' });
+    }
+    res.json({ prompt: data });
+  });
 });
 
 app.post('/process', async (req, res) => {

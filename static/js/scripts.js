@@ -1,6 +1,92 @@
 let listening = false;
 let recognition = null; // Store recognition instance
 let conversationHistory = []; // Store conversation history for each user
+let _speechSynth;
+let _voices;
+const _cache = {};
+let hasEnabledVoice = false;
+
+// Load voices when available
+function loadVoicesWhenAvailable(onComplete = () => {}) {
+  _speechSynth = window.speechSynthesis;
+  const voices = _speechSynth.getVoices();
+
+  if (voices.length !== 0) {
+    _voices = voices;
+    onComplete();
+  } else {
+    return setTimeout(function () { loadVoicesWhenAvailable(onComplete); }, 100);
+  }
+}
+
+// Get voices for a given locale
+function getVoices(locale) {
+  if (!_speechSynth) {
+    throw new Error('Browser does not support speech synthesis');
+  }
+  if (_cache[locale]) return _cache[locale];
+
+  _cache[locale] = _voices.filter(voice => voice.lang === locale);
+  return _cache[locale];
+}
+
+// Speak a certain text
+function playByText(locale, text, onEnd) {
+  const voices = getVoices(locale);
+
+  const utterance = new window.SpeechSynthesisUtterance();
+  utterance.voice = voices[2];
+  utterance.pitch = 1.2;
+  utterance.rate = 1.1;
+  utterance.voiceURI = 'native';
+  utterance.volume = 1;
+  utterance.text = text;
+  utterance.lang = locale;
+
+  if (onEnd) {
+    utterance.onend = onEnd;
+  }
+
+  _speechSynth.cancel(); // cancel current speak, if any is running
+    _speechSynth.speak(utterance);
+}
+
+// Initialize voices on document ready
+document.addEventListener('DOMContentLoaded', () => {
+  loadVoicesWhenAvailable(() => {
+    console.log("Voices loaded");
+  });
+  addEventListeners();
+  fetchSystemPrompt();
+});
+
+// Enable speech synthesis on user interaction
+document.addEventListener('click', () => {
+  if (hasEnabledVoice) {
+    return;
+  }
+  const lecture = new SpeechSynthesisUtterance('hello');
+  lecture.volume = 0;
+  speechSynthesis.speak(lecture);
+  hasEnabledVoice = true;
+});
+
+function fetchSystemPrompt() {
+  fetch('/system-prompt')
+    .then(response => response.json())
+    .then(data => {
+      const prompt = data.prompt;
+      let date = new Date().toLocaleDateString('fr-FR');
+      let heure = new Date().toLocaleTimeString('fr-FR');
+      let systemPrompt = 'Nous sommes le ' + date + ' et il est ' + heure + '. ' + prompt;
+      console.log('System prompt:', systemPrompt);
+      conversationHistory.push({ role: 'user', parts: [{ text: `System: ${systemPrompt}` }] });
+      conversationHistory.push({ role: 'model', parts: [{ text: 'Understood.' }] });
+    })
+    .catch(error => {
+      console.error('Error fetching system prompt:', error);
+    });
+}
 
 function startRecognition() {
   if (!('webkitSpeechRecognition' in window)) {
@@ -39,11 +125,13 @@ function startRecognition() {
 
   recognition.onend = function() {
     console.log('Speech recognition ended');
-};
-if (listening) {
-  console.log('Restarting speech recognition (until mic button is clicked)');
+    if (listening) {
+      console.log('Restarting speech recognition (until mic button is clicked)');
+      recognition.start();
+    }
+  };
+
   recognition.start();
-}
 }
 
 function addEventListeners() {
@@ -52,18 +140,6 @@ function addEventListeners() {
     console.log('Adding event listener to mic button');
     micButton.addEventListener('click', function() {
       console.log('Mic button clicked');
-
-      let hasEnabledVoice = false;  
-      document.addEventListener('click', () => {
-      if (hasEnabledVoice) {
-          return;
-      }
-      const lecture = new SpeechSynthesisUtterance('hello');
-      lecture.volume = 0;
-      speechSynthesis.speak(lecture);
-      hasEnabledVoice = true;
-      });
-
       if (!listening) {
         listening = true;
         micButton.classList.add('blinking');
@@ -77,16 +153,6 @@ function addEventListeners() {
     });
   }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  addEventListeners();
-  // Initialize conversation history with system prompt
-  let date = new Date().toLocaleDateString('fr-FR');
-  let heure = new Date().toLocaleTimeString('fr-FR');
-  let prompt = 'Nous sommes le ' + date + ' et il est ' + heure + '. ' + document.getElementById('system-prompt').textContent;
-  conversationHistory.push({ role: 'user', parts: [{ text: `System: ${prompt}` }] });
-  conversationHistory.push({ role: 'model', parts: [{ text: 'Understood.' }] });
-});
 
 async function sendTextToServer(text) {
   console.log('Sending text to server:', text);
@@ -108,14 +174,14 @@ async function sendTextToServer(text) {
         listening = false;  
         updateBookingDetails(data.reservationDetails);
         displayMessage('Réservation enregistrée. Merci et à bientôt!', false);
-        speakText('Réservation enregistrée. Merci et à bientôt!');
+        playByText('fr-FR', 'Réservation enregistrée. Merci et à bientôt!');
         const micButton = document.querySelector('.mic-button');
         if (micButton) {
           micButton.classList.remove('blinking');
         }
       } else {
         displayMessage(data.aiResponse, false);
-        speakText(data.aiResponse, startRecognition);
+        playByText('fr-FR', data.aiResponse, startRecognition);
       }
     }
   } catch (error) {
@@ -138,25 +204,6 @@ function displayMessage(message, user = true) {
     chatBox.scrollTop = chatBox.scrollHeight;
   } else {
     console.error('Chat box element not found');
-  }
-}
-
-function speakText(text, callback) {
-  if ('speechSynthesis' in window) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'fr-FR'; // Set language to French
-    utterance.rate = 1.1; // Adjust speed (1 is normal)
-    utterance.pitch = 0.9; // Adjust pitch (1 is normal)
-    utterance.onend = function() {
-    console.log('Speech synthesis finished');
-      if (callback) {
-        console.log('Callback after speech synthesis');
-        callback();
-      }
-    };
-    speechSynthesis.speak(utterance);
-  } else {
-    console.error('Speech synthesis is not supported in this browser.');
   }
 }
 
