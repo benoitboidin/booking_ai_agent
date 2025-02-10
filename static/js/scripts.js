@@ -129,7 +129,7 @@ function startRecognition() {
     console.log('Speech recognition ended');
     if (listening) {
       console.log('Restarting speech recognition (until mic button is clicked)');
-      recognition.start();
+      // recognition.start();
     }
   };
 
@@ -171,7 +171,13 @@ async function sendTextToServer(text) {
     console.log(data.message);
     if (data.aiResponse) {
       conversationHistory.push({ role: 'model', parts: [{ text: data.aiResponse }] });
-      if (data.reservationDetails) {
+      
+      let result = parseReservationDetails(data.aiResponse);
+      if (result.data) {
+        updateBookingDetails(result.data);
+      }
+
+      if (data.nom && data.date && data.heure && data.nombre_personnes) {
         recognition.stop(); 
         listening = false;  
         updateBookingDetails(data.reservationDetails);
@@ -182,13 +188,29 @@ async function sendTextToServer(text) {
           micButton.classList.remove('blinking');
         }
       } else {
-        displayMessage(data.aiResponse, false);
-        playByText('fr-FR', data.aiResponse, startRecognition);
+        displayMessage(result.message, false);
+        playByText('fr-FR', result.message, startRecognition);
       }
+      
     }
   } catch (error) {
     console.error('Error:', error);
   }
+}
+
+function parseReservationDetails(text) {
+    const match = text.match(/```json\s*([\s\S]+?)\s*```/);
+    console.log('Reservation details match:', match);
+    if (match) {
+        const message = text.replace(match[0], '').trim();
+        try {
+            const data = JSON.parse(match[1]);
+            return { message, data };
+        } catch (error) {
+            console.error('Invalid JSON format:', error);
+        }
+    }
+    return { message: text, data: null };
 }
 
 function displayMessage(message, user = true) {
@@ -228,5 +250,3 @@ function updateBookingDetails(details) {
   if (details.nombre_personnes) updateField('number-of-clients', details.nombre_personnes, ' personnes');
   if (details.nom) updateField('user-name', details.nom);
 }
-
-
