@@ -5,4 +5,4 @@ Personal projet : a booking agent for a restaurent, using only voice input from 
 > [!TIP]
 > It's live: https://booking-ai-agent.onrender.com  
 
-<img width="418" alt="Screenshot 2025-02-06 at 09 53 14" src="https://github.com/user-attachments/assets/11855212-9cc6-4048-8115-aef6d9cb9c53" />
+![IMG_3250](https://github.com/user-attachments/assets/828438c5-cf57-4654-932b-541e18bc82be)
