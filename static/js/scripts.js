@@ -77,13 +77,11 @@ async function fetchSystemPrompt() {
     const data = await response.json();
     
     const prompt = data.prompt;
-    let date = new Date().toLocaleDateString('fr-FR');
-    let heure = new Date().toLocaleTimeString('fr-FR');
-    let systemPrompt = `Nous sommes le ${date} et il est ${heure}. ${prompt}`;
+
     
-    console.log('System prompt:', systemPrompt);
+    console.log('System prompt:', prompt);
     
-    conversationHistory.push({ role: 'user', parts: [{ text: `System: ${systemPrompt}` }] });
+    conversationHistory.push({ role: 'user', parts: [{ text: `System: ${prompt}` }] });
     conversationHistory.push({ role: 'model', parts: [{ text: 'Understood.' }] });
   } catch (error) {
     console.error('Error fetching system prompt:', error);

@@ -26,7 +26,10 @@ app.get('/system-prompt', (req, res) => {
       console.error('Error reading system prompt:', err);
       return res.status(500).json({ status: 'error', message: 'Error reading system prompt' });
     }
-    return res.json({ prompt: data });
+    let date = new Date().toLocaleDateString('fr-FR');
+    let heure = new Date().toLocaleTimeString('fr-FR');
+    let systemPrompt = `Nous sommes le ${date} et il est ${heure}. ${data}`;
+    return res.json({ prompt: systemPrompt });
   });
 });
 
