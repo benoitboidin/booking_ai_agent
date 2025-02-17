@@ -35,7 +35,7 @@ function playByText(locale, text, onEnd) {
   const voices = getVoices(locale);
 
   const utterance = new window.SpeechSynthesisUtterance();
-  utterance.voice = voices[2];
+//   utterance.voice = voices[4];
   utterance.pitch = 1.2;
   utterance.rate = 1.1;
   utterance.voiceURI = 'native';
@@ -49,6 +49,13 @@ function playByText(locale, text, onEnd) {
 
   _speechSynth.cancel(); // cancel current speak, if any is running
   _speechSynth.speak(utterance);
+}
+
+function greeUser() {
+    let greeting = 'Bienvenue au Café Paris, puis-je prendre votre réservation ?';
+    playByText('fr-FR', greeting);
+    displayMessage(greeting, false);
+    conversationHistory.push({ role: 'model', parts: [{ text: greeting }] });
 }
 
 // Initialize voices on document ready
@@ -69,6 +76,7 @@ document.addEventListener('click', () => {
   lecture.volume = 0;
   speechSynthesis.speak(lecture);
   hasEnabledVoice = true;
+  greeUser();
 });
 
 async function fetchSystemPrompt() {
