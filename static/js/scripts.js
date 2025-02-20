@@ -50,8 +50,8 @@ function playByText(locale, text, onEnd) {
   _speechSynth.speak(utterance);
 }
 
-function greetUser() {
-    let greeting = 'Bienvenue au Café Paris, puis-je prendre votre réservation ?';
+async function greetUser() {
+    const greeting = await fetchGreeting();
     playByText('fr-FR', greeting);
     displayMessage(greeting, false);
     conversationHistory += `model: ${greeting}\n`;
@@ -92,6 +92,17 @@ async function fetchSystemPrompt() {
   } catch (error) {
     console.error('Error fetching system prompt:', error);
   }
+}
+
+async function fetchGreeting() {
+    try {
+        const response = await fetch('/greeting');
+        const data = await response.json();
+        console.log('Greeting:', data.greeting);
+        return data.greeting;
+    } catch (error) {
+        console.error('Error fetching greeting:', error);
+    }
 }
 
 function startRecognition() {
@@ -181,20 +192,20 @@ async function sendTextToServer(text) {
         updateBookingDetails(result.data);
       }
 
-        if (result.data.nom && result.data.date && result.data.heure && result.data.nombre_personnes) {
-            recognition.stop(); 
-            listening = false;  
-            updateBookingDetails(result.data);
-            displayMessage('Réservation enregistrée. Merci et à bientôt!', false);
-            playByText('fr-FR', 'Réservation enregistrée. Merci et à bientôt!');
-            const micButton = document.querySelector('.mic-button');
-            if (micButton) {
-            micButton.classList.remove('blinking');
-            }
-        } else {
+        // if (result.data.nom && result.data.date && result.data.heure && result.data.nombre_personnes) {
+        //     recognition.stop(); 
+        //     listening = false;  
+        //     updateBookingDetails(result.data);
+        //     displayMessage('Réservation enregistrée. Merci et à bientôt!', false);
+        //     playByText('fr-FR', 'Réservation enregistrée. Merci et à bientôt!');
+        //     const micButton = document.querySelector('.mic-button');
+        //     if (micButton) {
+        //     micButton.classList.remove('blinking');
+        //     }
+        // } else {
             displayMessage(result.message, false);
             playByText('fr-FR', result.message, startRecognition);
-        }
+        // }
       
     }
   } catch (error) {

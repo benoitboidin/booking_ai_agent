@@ -59,6 +59,16 @@ app.get('/system-prompt', (req, res) => {
   });
 });
 
+app.get('/greeting', (req, res) => {
+  fs.readFile('config/greeting.txt', 'utf8', (err, data) => {
+      if (err) {
+      console.error('Error reading greeting:', err);
+      return res.status(500).json({ status: 'error', message: 'Error reading greeting' });
+      }
+      return res.json({ greeting: `${data}` });
+  });
+});
+
 app.post('/process', async (req, res) => {
   const text = req.body.text || '';
   let conversationHistory = req.body.conversationHistory || '';
