@@ -1,6 +1,6 @@
 let listening = false;
 let recognition = null; // Store recognition instance
-let conversationHistory = []; // Store conversation history for each user
+let conversationHistory = ''; // Store conversation history as a string
 let _speechSynth;
 let _voices;
 const _cache = {};
@@ -38,7 +38,6 @@ function playByText(locale, text, onEnd) {
 //   utterance.voice = voices[4];
   utterance.pitch = 1.2;
   utterance.rate = 1.1;
-  utterance.voiceURI = 'native';
   utterance.volume = 1;
   utterance.text = text;
   utterance.lang = locale;
@@ -51,11 +50,11 @@ function playByText(locale, text, onEnd) {
   _speechSynth.speak(utterance);
 }
 
-function greeUser() {
+function greetUser() {
     let greeting = 'Bienvenue au Café Paris, puis-je prendre votre réservation ?';
     playByText('fr-FR', greeting);
     displayMessage(greeting, false);
-    conversationHistory.push({ role: 'model', parts: [{ text: greeting }] });
+    conversationHistory += `model: ${greeting}\n`;
 }
 
 // Initialize voices on document ready
@@ -76,7 +75,7 @@ document.addEventListener('click', () => {
   lecture.volume = 0;
   speechSynthesis.speak(lecture);
   hasEnabledVoice = true;
-  greeUser();
+  greetUser();
 });
 
 async function fetchSystemPrompt() {
@@ -86,11 +85,10 @@ async function fetchSystemPrompt() {
     
     const prompt = data.prompt;
 
-    
     console.log('System prompt:', prompt);
     
-    conversationHistory.push({ role: 'user', parts: [{ text: `System: ${prompt}` }] });
-    conversationHistory.push({ role: 'model', parts: [{ text: 'Understood.' }] });
+    conversationHistory += `user: (system prompt) ${prompt}\n`;
+    // conversationHistory += `model: Understood.\n`;
   } catch (error) {
     console.error('Error fetching system prompt:', error);
   }
@@ -123,7 +121,7 @@ function startRecognition() {
     console.log(sentenceNumber, 'Transcript:', transcript);
     sentenceNumber++;
     displayMessage(transcript, true);
-    conversationHistory.push({ role: 'user', parts: [{ text: transcript }] });
+    conversationHistory += `user: ${transcript}\n`;
     sendTextToServer(transcript);
   };
 
@@ -176,26 +174,27 @@ async function sendTextToServer(text) {
     const data = await response.json();
     console.log(data.message);
     if (data.aiResponse) {
-      conversationHistory.push({ role: 'model', parts: [{ text: data.aiResponse }] });
+      conversationHistory += `model: ${data.aiResponse}\n`;
       
       let result = parseReservationDetails(data.aiResponse);
       if (result.data) {
         updateBookingDetails(result.data);
       }
-      if (result.data.nom && result.data.date && result.data.heure && result.data.nombre_personnes) {
-        recognition.stop(); 
-        listening = false;  
-        updateBookingDetails(result.data);
-        displayMessage('Réservation enregistrée. Merci et à bientôt!', false);
-        playByText('fr-FR', 'Réservation enregistrée. Merci et à bientôt!');
-        const micButton = document.querySelector('.mic-button');
-        if (micButton) {
-          micButton.classList.remove('blinking');
+
+        if (result.data.nom && result.data.date && result.data.heure && result.data.nombre_personnes) {
+            recognition.stop(); 
+            listening = false;  
+            updateBookingDetails(result.data);
+            displayMessage('Réservation enregistrée. Merci et à bientôt!', false);
+            playByText('fr-FR', 'Réservation enregistrée. Merci et à bientôt!');
+            const micButton = document.querySelector('.mic-button');
+            if (micButton) {
+            micButton.classList.remove('blinking');
+            }
+        } else {
+            displayMessage(result.message, false);
+            playByText('fr-FR', result.message, startRecognition);
         }
-      } else {
-        displayMessage(result.message, false);
-        playByText('fr-FR', result.message, startRecognition);
-      }
       
     }
   } catch (error) {

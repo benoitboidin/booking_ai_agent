@@ -9,11 +9,37 @@ const app = express();
 const PORT = process.env.PORT || 5050;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-console.log('API Key:', GEMINI_API_KEY); // Log the API key to ensure it's being loaded
-
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'static')));
+
+// API specific functions
+
+function convertToGeminiFormat(conversationHistory) {   
+        // Define the pattern to match the roles and their corresponding text
+        const pattern = /(model|user): (.*)/i;
+
+        // Split the text into lines
+        const lines = conversationHistory.split('\n');
+    
+        // Initialize the structured content as an array
+        const structuredContent = [];
+    
+        // Iterate over each line and match the pattern
+        lines.forEach(line => {
+            const match = line.match(pattern);
+            if (match) {
+                const role = match[1].toLowerCase();
+                const content = match[2];
+                structuredContent.push({
+                    role: role,
+                    parts: [{ text: content }]
+                });
+            }
+        });
+    
+        return structuredContent;
+    }
 
 // Routes
 app.get('/', (req, res) => {
@@ -35,7 +61,7 @@ app.get('/system-prompt', (req, res) => {
 
 app.post('/process', async (req, res) => {
   const text = req.body.text || '';
-  const conversationHistory = req.body.conversationHistory || [];
+  let conversationHistory = req.body.conversationHistory || '';
 
   if (!text) {
     return res.json({ status: 'error', message: 'No text provided!' });
@@ -44,7 +70,8 @@ app.post('/process', async (req, res) => {
   console.log('You said:', text);
 
   // Add user message to conversation history
-  conversationHistory.push({ role: 'user', parts: [{ text: text }] });
+//   conversationHistory += `user: ${text}\n`;
+  console.log('Adding user transcript. Conversation history:', conversationHistory);
 
   try {
     const fetch = (await import('node-fetch')).default;
@@ -54,10 +81,11 @@ app.post('/process', async (req, res) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        contents: conversationHistory
+        contents: convertToGeminiFormat(conversationHistory)
       })
     });
 
+    console.log('contents:', convertToGeminiFormat(conversationHistory));
     console.log('Gemini API response:', response);
 
     if (!response.ok) {
@@ -68,10 +96,10 @@ app.post('/process', async (req, res) => {
 
     const data = await response.json();
     const aiResponse = data.candidates[0].content.parts[0].text;
-    console.log('AI response:', aiResponse);
+    console.log('model response:', aiResponse);
 
     // Add AI response to conversation history
-    conversationHistory.push({ role: 'model', parts: [{ text: aiResponse }] });
+    conversationHistory += `model: ${aiResponse}\n`;
 
     // Check if the AI response contains the reservation details in JSON format
     let reservationDetails;
@@ -81,7 +109,7 @@ app.post('/process', async (req, res) => {
       reservationDetails = null;
     }
 
-    return res.json({ status: 'success', message: 'Voice processed successfully!', text: text, aiResponse: aiResponse, reservationDetails: reservationDetails });
+    return res.json({ status: 'success', message: 'Voice processed successfully!', text: text, aiResponse: aiResponse, reservationDetails: reservationDetails, conversationHistory: conversationHistory });
   } catch (error) {
     console.error('Error communicating with Gemini:', error);
     return res.json({ status: 'error', message: 'Error communicating with Gemini', details: error.message });
