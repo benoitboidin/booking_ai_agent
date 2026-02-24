@@ -7,6 +7,7 @@
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <link rel="stylesheet" href="/css/styles.css">
     <script src="js/scripts.js" defer></script>
+    <script src="js/annotation.js" defer></script>
   </head>
   <body>
     <div class="container">
@@ -14,13 +15,42 @@
         <!-- <img src="/assets/servings.svg" alt="Fork and knife icon" class="logo"> -->
         Café Paris • Réservations
       </h1>
-      <div id="chat-box" class="chat-box"></div>
-      <div class="booking-details">
-        <span id="user-name" class="booking-info empty" ">Nom</span>
-        <span id="number-of-clients" class="booking-info empty" ">Nb. personnes</span>
-        <span id="booking-date" class="booking-info empty" ">Date</span>
-        <span id="booking-time" class="booking-info empty" ">Heure</span>
+
+      <!-- Tab navigation -->
+      <div class="tab-nav" role="tablist">
+        <button class="annotation-tab-btn active" data-tab="chat" role="tab" aria-selected="true">💬 Chat</button>
+        <button class="annotation-tab-btn" data-tab="annotation" role="tab" aria-selected="false">🖼️ Annotations</button>
       </div>
+
+      <!-- Chat tab -->
+      <div id="tab-chat" class="tab-content active">
+        <div id="chat-box" class="chat-box"></div>
+        <div class="booking-details">
+          <span id="user-name" class="booking-info empty">Nom</span>
+          <span id="number-of-clients" class="booking-info empty">Nb. personnes</span>
+          <span id="booking-date" class="booking-info empty">Date</span>
+          <span id="booking-time" class="booking-info empty">Heure</span>
+        </div>
+      </div>
+
+      <!-- Annotation tab -->
+      <div id="tab-annotation" class="tab-content">
+        <div class="annotation-panel">
+          <div class="annotation-toolbar">
+            <select id="annotation-image-selector" class="annotation-select">
+              <option value="canvas1" data-src="">Blank canvas 1</option>
+              <option value="canvas2" data-src="">Blank canvas 2</option>
+            </select>
+            <span class="annotation-hint">Click canvas to enable Ctrl/Cmd+Z shortcuts</span>
+          </div>
+          <canvas id="annotation-canvas" class="annotation-canvas" width="800" height="500"></canvas>
+          <div class="annotation-info">
+            <span id="annotation-count">0 annotations</span>
+            <button id="annotation-delete-last" class="annotation-btn">Delete Last</button>
+          </div>
+        </div>
+      </div>
+
       <div class="mic-button-container">
         <button class="mic-button" id="mic-button">
             <img src="/assets/phone.svg" alt="Microphone icon" class="mic-icon">
