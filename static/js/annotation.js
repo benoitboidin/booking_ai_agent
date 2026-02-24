@@ -139,7 +139,7 @@
     img.onload = function () {
       self._bgImage = img;
       self.canvas.width = img.naturalWidth || 800;
-      self.canvas.height = img.naturalHeight || 600;
+      self.canvas.height = img.naturalHeight || 500;
       init();
     };
     img.src = src;
@@ -375,7 +375,7 @@
 
       var isUndo = !e.shiftKey && e.key === 'z';
       var isRedo = (e.shiftKey && e.key === 'z') ||
-                   (!e.shiftKey && e.key === 'y' && !e.metaKey); // Ctrl+Y (not Cmd+Y)
+                   (e.ctrlKey && !e.shiftKey && e.key === 'y'); // Ctrl+Y (Windows/Linux only)
 
       if (isUndo) {
         e.preventDefault();

@@ -18,12 +18,12 @@
 
       <!-- Tab navigation -->
       <div class="tab-nav" role="tablist">
-        <button class="annotation-tab-btn active" data-tab="chat" role="tab" aria-selected="true">💬 Chat</button>
-        <button class="annotation-tab-btn" data-tab="annotation" role="tab" aria-selected="false">🖼️ Annotations</button>
+        <button class="annotation-tab-btn active" data-tab="chat" id="tab-btn-chat" role="tab" aria-selected="true" aria-controls="tab-chat">💬 Chat</button>
+        <button class="annotation-tab-btn" data-tab="annotation" id="tab-btn-annotation" role="tab" aria-selected="false" aria-controls="tab-annotation">🖼️ Annotations</button>
       </div>
 
       <!-- Chat tab -->
-      <div id="tab-chat" class="tab-content active">
+      <div id="tab-chat" class="tab-content active" role="tabpanel" aria-labelledby="tab-btn-chat">
         <div id="chat-box" class="chat-box"></div>
         <div class="booking-details">
           <span id="user-name" class="booking-info empty">Nom</span>
@@ -34,7 +34,7 @@
       </div>
 
       <!-- Annotation tab -->
-      <div id="tab-annotation" class="tab-content">
+      <div id="tab-annotation" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-annotation">
         <div class="annotation-panel">
           <div class="annotation-toolbar">
             <select id="annotation-image-selector" class="annotation-select">
